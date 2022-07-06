@@ -28,6 +28,7 @@ public class PlayerInputPC : MonoBehaviour {
     public KeyCode PauseKey { set { _pauseKey = value; } }
 
     private void Update() {
+        // Remake so that it stores input for X amount of time
         PlayerInputs.Movement = new Vector3((Input.GetKey(_leftKey) ? -1 : 0) + (Input.GetKey(_rightKey) ? 1 : 0), 0, (Input.GetKey(_backwardKey) ? -1 : 0) + (Input.GetKey(_forwardKey) ? 1 : 0)).normalized;
         PlayerInputs.JumpKey = Input.GetKey(_jumpKey);
         PlayerInputs.PickKeyDown = Input.GetKeyDown(_pickKey);
