@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class PlayerInputPC : MonoBehaviour {
 
+    [SerializeField] private float _inputRememberDuration = 0.2f;
+
     [Header("Input Keys")]
 
     [SerializeField] private KeyCode _forwardKey = KeyCode.W;
-    public KeyCode ForwardKey { set { _forwardKey = value; } }
+    public KeyCode ForwardKey { set { _forwardKey = value; } } // Make write-only ?
     [SerializeField] private KeyCode _backwardKey = KeyCode.S;
     public KeyCode BackwardKey { set { _backwardKey = value; } }
     [SerializeField] private KeyCode _leftKey = KeyCode.A;
@@ -28,11 +30,16 @@ public class PlayerInputPC : MonoBehaviour {
     public KeyCode PauseKey { set { _pauseKey = value; } }
 
     private void Update() {
-        // Remake so that it stores input for X amount of time
+        PlayerInputs.JumpKey -= Time.deltaTime;
+        PlayerInputs.JumpKeyDown -= Time.deltaTime;
+        PlayerInputs.PickKeyDown -= Time.deltaTime;
+        PlayerInputs.RollKeyDown -= Time.deltaTime;
+
         PlayerInputs.Movement = new Vector3((Input.GetKey(_leftKey) ? -1 : 0) + (Input.GetKey(_rightKey) ? 1 : 0), 0, (Input.GetKey(_backwardKey) ? -1 : 0) + (Input.GetKey(_forwardKey) ? 1 : 0)).normalized;
-        PlayerInputs.JumpKey = Input.GetKey(_jumpKey);
-        PlayerInputs.PickKeyDown = Input.GetKeyDown(_pickKey);
-        PlayerInputs.RollKeyDown = Input.GetKeyDown(_rollKey);
+        if (Input.GetKey(_jumpKey)) PlayerInputs.JumpKey = _inputRememberDuration;
+        if (Input.GetKeyDown(_jumpKey)) PlayerInputs.JumpKeyDown = _inputRememberDuration;
+        if (Input.GetKeyDown(_pickKey)) PlayerInputs.PickKeyDown = _inputRememberDuration;
+        if (Input.GetKeyDown(_rollKey)) PlayerInputs.RollKeyDown = _inputRememberDuration;
     }
 
 }

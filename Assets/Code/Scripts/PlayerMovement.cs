@@ -48,7 +48,7 @@ public class PlayerMovement : MonoBehaviour {
         _movementSpeed = _groundMoveSpeed;
         _accelerationDuration = _accelerationDuration * Time.fixedDeltaTime;
         _groundCheckArea /= 2;
-        StartCoroutine(EndLevelIntro()); 
+        StartCoroutine(EndLevelIntro());
 
         _camera = Camera.main.transform;
     }
@@ -60,28 +60,37 @@ public class PlayerMovement : MonoBehaviour {
 
             float targetAngle = Mathf.Atan2(PlayerInputs.Movement.x, PlayerInputs.Movement.z) * Mathf.Rad2Deg + _camera.eulerAngles.y;
             Vector3 velocity = (PlayerInputs.Movement.sqrMagnitude > 0 ? (Quaternion.Euler(0, targetAngle, 0) * Vector3.forward).normalized : _rb.velocity.normalized) * _movementSpeed * _currentAcceleration; // CHECK FOR BETTER FORMATTING
-            _rb.velocity = new Vector3(velocity.x, _rb.velocity.y, velocity.z);
             if (PlayerInputs.Movement != Vector3.zero) transform.rotation = Quaternion.Euler(0, Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _currentTurnVelocity, _turnDuration), 0);
 
             // Jump
             _isGrounded = Physics.OverlapBox(transform.position + _groundCheckOffset, _groundCheckArea, Quaternion.identity, _groundLayer).Length > 0; // (MUST CHECK!)
-            if (PlayerInputs.JumpKey) {
-                if (_isGrounded) {
+            if (_isGrounded) {
+                if (PlayerInputs.JumpKeyDown > 0) {
+                    PlayerInputs.JumpKeyDown = 0;
                     _rb.velocity += Vector3.up * _jumpStrenght; // This takes in consideration Y velocity will always be 0 (MUST CHECK!)
+                    velocity[1] = _rb.velocity.y;
                     StartCoroutine(DelayToWingFlap());
                 }
                 else {
-                    if (_currentWingFlapTime < _wingFlapMaxDuration) {
-                        _currentWingFlapTime += Time.deltaTime;
-                        _movementSpeed = _groundMoveSpeed;
-                        _rb.velocity = new Vector3(_rb.velocity.x, _wingFlapYVelocity, _rb.velocity.z); // Adjust flight to go up or down
-                    }
-                    else {
-                        _movementSpeed = _airMoveSpeed;
-                    }
+                    _movementSpeed = _groundMoveSpeed;
+                    velocity[1] = _rb.velocity.y;
                 }
             }
-            else _movementSpeed = _isGrounded ? _groundMoveSpeed : _airMoveSpeed;
+            else {
+                if (PlayerInputs.JumpKey > 0 && _currentWingFlapTime > 0) {
+                    _movementSpeed = _groundMoveSpeed;
+                    velocity[1] = _wingFlapYVelocity;
+                    _currentWingFlapTime -= Time.deltaTime;
+
+                }
+                else {
+                    velocity[1] = _rb.velocity.y;
+                    _movementSpeed = _airMoveSpeed;
+                }
+            }
+
+            // Apply
+            _rb.velocity = velocity;
         }
     }
 
@@ -93,16 +102,17 @@ public class PlayerMovement : MonoBehaviour {
 
     private IEnumerator DelayToWingFlap() { // Study possibility of passing references to IEnumerator
         _movementSpeed = _airMoveSpeed;
+        _currentWingFlapTime = 0;
 
         yield return new WaitForSeconds(_delayToWingFlap);
 
-        _currentWingFlapTime = 0;
+        _currentWingFlapTime = _wingFlapMaxDuration;
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected() {
         Gizmos.color = _isGrounded ? Color.green : Color.red;
-        Gizmos.DrawWireCube(transform.position + _groundCheckOffset, Application.isPlaying ? _groundCheckArea * 2 : _groundCheckArea); 
+        Gizmos.DrawWireCube(transform.position + _groundCheckOffset, Application.isPlaying ? _groundCheckArea * 2 : _groundCheckArea);
     }
 #endif
 
