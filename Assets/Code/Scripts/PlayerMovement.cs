@@ -35,6 +35,7 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] private float _wingFlapMaxDuration = 3;
     private float _currentWingFlapTime = 0;
     [SerializeField] private float _delayToWingFlap = 0.6f;
+    private Coroutine _currentWingFlapCoroutine = null;
 
     [Header("References")]
 
@@ -63,13 +64,14 @@ public class PlayerMovement : MonoBehaviour {
             if (PlayerInputs.Movement != Vector3.zero) transform.rotation = Quaternion.Euler(0, Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _currentTurnVelocity, _turnDuration), 0);
 
             // Jump
+            bool wasGrounded = _isGrounded;
             _isGrounded = Physics.OverlapBox(transform.position + _groundCheckOffset, _groundCheckArea, Quaternion.identity, _groundLayer).Length > 0; // (MUST CHECK!)
             if (_isGrounded) {
                 if (PlayerInputs.JumpKeyDown > 0) {
                     PlayerInputs.JumpKeyDown = 0;
                     _rb.velocity += Vector3.up * _jumpStrenght; // This takes in consideration Y velocity will always be 0 (MUST CHECK!)
                     velocity[1] = _rb.velocity.y;
-                    StartCoroutine(DelayToWingFlap());
+                    _currentWingFlapCoroutine = StartCoroutine(DelayToWingFlap());
                 }
                 else {
                     _movementSpeed = _groundMoveSpeed;
@@ -88,6 +90,7 @@ public class PlayerMovement : MonoBehaviour {
                     _movementSpeed = _airMoveSpeed;
                 }
             }
+            // if (wasGrounded && wasGrounded != _isGrounded && _currentWingFlapCoroutine != null) _currentWingFlapTime = _wingFlapMaxDuration; REQUIRES DEBUGGING
 
             // Apply
             _rb.velocity = velocity;
@@ -101,6 +104,7 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private IEnumerator DelayToWingFlap() { // Study possibility of passing references to IEnumerator
+        if (_currentWingFlapCoroutine != null) StopCoroutine(_currentWingFlapCoroutine); // Prevent Coroutine Stacking
         _movementSpeed = _airMoveSpeed;
         _currentWingFlapTime = 0;
 
