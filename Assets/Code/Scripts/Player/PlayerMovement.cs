@@ -22,6 +22,10 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] private float _turnDuration = 0.25f;
     private float _currentTurnVelocity = 0;
 
+    [Header("Slope Logic")]
+
+    [SerializeField] private Vector3 _slopeRay = Vector3.down;
+
     [Header("Jump")]
 
     [Tooltip("Velocity added in Y when jumping")]
@@ -57,7 +61,10 @@ public class PlayerMovement : MonoBehaviour {
     private void FixedUpdate() {
         if (_canMove) {
             // Movement
-            _currentAcceleration = Mathf.Clamp01(_currentAcceleration + (PlayerInputs.Movement.sqrMagnitude > 0 ? 1 : -1) / _accelerationDuration);
+
+            //RaycastHit hit;
+            //_ = Physics.Linecast(transform.position, transform.position - _slopeRay, out hit, _groundLayer, QueryTriggerInteraction.Ignore);
+            _currentAcceleration = Mathf.Clamp01(_currentAcceleration + (PlayerInputs.Movement.sqrMagnitude > 0 ? 1 : -1) / _accelerationDuration) /* * (1 - (Vector3.Angle(transform.up, hit.normal) / 90)) */;
 
             float targetAngle = Mathf.Atan2(PlayerInputs.Movement.x, PlayerInputs.Movement.z) * Mathf.Rad2Deg + _camera.eulerAngles.y;
             Vector3 velocity = (PlayerInputs.Movement.sqrMagnitude > 0 ? (Quaternion.Euler(0, targetAngle, 0) * Vector3.forward).normalized : _rb.velocity.normalized) * _movementSpeed * _currentAcceleration; // CHECK FOR BETTER FORMATTING
@@ -117,6 +124,8 @@ public class PlayerMovement : MonoBehaviour {
     private void OnDrawGizmosSelected() {
         Gizmos.color = _isGrounded ? Color.green : Color.red;
         Gizmos.DrawWireCube(transform.position + _groundCheckOffset, Application.isPlaying ? _groundCheckArea * 2 : _groundCheckArea);
+        Gizmos.color = Physics.Linecast(transform.position, transform.position - _slopeRay, _groundLayer, QueryTriggerInteraction.Ignore) ? Color.green : Color.red;
+        Gizmos.DrawLine(transform.position, transform.position - _slopeRay);
     }
 #endif
 
