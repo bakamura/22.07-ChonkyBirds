@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerPickUp : MonoBehaviour {
@@ -22,7 +21,7 @@ public class PlayerPickUp : MonoBehaviour {
 
     private Coroutine _currentCoroutine = null;
     private Transform _currentObj = null;
-    public Transform currentObj { get { return _currentObj; } }
+    public Transform CurrentObj { get { return _currentObj; } }
 
     const string Object = "Object";
     const string Food = "Food";
@@ -30,54 +29,49 @@ public class PlayerPickUp : MonoBehaviour {
     private WaitForSeconds _waitPick;
     private WaitForSeconds _waitRelease;
 
+    [Header("Proxy")]
+
+    private PlayerMovement _movementScript;
+    private Rigidbody _rb;
 
     private void Awake() {
+        _movementScript = GetComponent<PlayerMovement>();
+        _rb = GetComponent<Rigidbody>();
+
         _waitPick = new WaitForSeconds(_pickUpDuration);
         _waitRelease = new WaitForSeconds(_releaseDuration);
     }
 
     private void Update() {
-        if (_currentCoroutine == null && PlayerInputs.PickKeyDown > 0f) {
+        if (_currentCoroutine == null && _movementScript.IsGrounded && PlayerInputs.PickKeyDown > 0f) {
             if (_currentObj == null) _currentCoroutine = StartCoroutine(PickupObj());
             else _currentCoroutine = StartCoroutine(ReleaseObj());
         }
     }
 
     private IEnumerator PickupObj() {
+        _rb.velocity = Vector3.zero;
+        _movementScript.CanMove = false;
         // Set Anim
 
-        yield return new WaitForSeconds(_pickUpDuration);
+        yield return _waitPick;
 
-        Collider[] objs = Physics.OverlapSphere(transform.position + _pickUpOffSet, _pickUpRange); // Needs to rotate to player facing direction
+        Collider[] objs = Physics.OverlapSphere(transform.position + (Quaternion.Euler(0, transform.eulerAngles.y, 0) * _pickUpOffSet), _pickUpRange); // Needs to rotate to player facing direction
         bool foreachBreaker = false;
         foreach (Collider obj in objs) {
             switch (obj.tag) {
                 case Object:
-                    _currentObj = obj.transform;
-                    _currentObj.transform.SetParent(_beakPoint, false);
-                    _currentObj.localPosition = Vector3.zero;
-                    _currentObj.localEulerAngles = Vector3.zero;
-                    _currentObj.GetComponent<Rigidbody>().useGravity = false;
-                    _currentObj.GetComponent<Rigidbody>().detectCollisions = false;
+                    SetupObject(obj, ref _currentObj, ref _beakPoint);
                     foreachBreaker = true;
                     break;
                 case Food:
-                    _currentObj = obj.transform;
-                    _currentObj.transform.SetParent(_beakPoint, false);
-                    _currentObj.localPosition = Vector3.zero;
-                    _currentObj.localEulerAngles = Vector3.zero;
-                    _currentObj.GetComponent<Rigidbody>().useGravity = false;
-                    _currentObj.GetComponent<Rigidbody>().detectCollisions = false;
+                    SetupObject(obj, ref _currentObj, ref _beakPoint);
+                    // Set roll btn to eat.
                     foreachBreaker = true;
                     break;
                 case Egg:
                     if (_eggObj == null) {
-                        _eggObj = obj.transform;
-                        _eggObj.transform.SetParent(_eggSackPoint, false);
-                        _eggObj.localPosition = Vector3.zero;
-                        _eggObj.localEulerAngles = Vector3.zero;
-                        _eggObj.GetComponent<Rigidbody>().useGravity = false;
-                        _eggObj.GetComponent<Rigidbody>().detectCollisions = false;
+                        SetupObject(obj, ref _eggObj, ref _eggSackPoint);
                         foreachBreaker = true;
                     }
                     else {
@@ -87,24 +81,46 @@ public class PlayerPickUp : MonoBehaviour {
             }
             if (foreachBreaker) break;
         }
+        _movementScript.CanMove = true;
+
+        _currentCoroutine = null;
+    }
+
+    private void SetupObject(Collider item, ref Transform itemSlot, ref Transform newParent) {
+        itemSlot = item.transform;
+        itemSlot.SetParent(newParent, false);
+        itemSlot.localPosition = Vector3.zero;
+        itemSlot.localEulerAngles = Vector3.zero;
+        Rigidbody itemRb = itemSlot.GetComponent<Rigidbody>();
+        itemRb.velocity = Vector3.zero;
+        itemRb.useGravity = false;
+        itemRb.detectCollisions = false;
+        itemRb.constraints = RigidbodyConstraints.FreezeAll; //
     }
 
     private IEnumerator ReleaseObj() {
+        _rb.velocity = Vector3.zero;
+        _movementScript.CanMove = false;
         // Set Anim
 
-        yield return new WaitForSeconds(_releaseDuration);
-        
+        yield return _waitRelease;
+
         _currentObj.SetParent(null, true);
-        _currentObj.GetComponent<Rigidbody>().useGravity = true;
-        _currentObj.GetComponent<Rigidbody>().detectCollisions = true;
+        Rigidbody itemRb = _currentObj.GetComponent<Rigidbody>();
+        itemRb.useGravity = true;
+        itemRb.detectCollisions = true;
+        itemRb.constraints = RigidbodyConstraints.None; //
         _currentObj = null;
+        _movementScript.CanMove = true;
+
+        _currentCoroutine = null;
     }
 
 #if UNITY_EDITOR
 
     private void OnDrawGizmos() {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + _pickUpOffSet, _pickUpRange);
+        Gizmos.DrawWireSphere(transform.position + (Quaternion.Euler(0, transform.eulerAngles.y, 0) * _pickUpOffSet), _pickUpRange);
     }
 
 #endif

@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour {
 
     [SerializeField] private float _levelIntroDuration = 3;
     private bool _canMove = false;
+    public bool CanMove { get { return _canMove; } set { _canMove = value; } }
 
     [Header("Walk")]
 
@@ -35,11 +36,17 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] private Vector3 _groundCheckArea = Vector3.one;
     [SerializeField] private Vector3 _groundCheckOffset = Vector3.zero;
     private bool _isGrounded = false;
+    public bool IsGrounded { get { return _isGrounded; } }
     [SerializeField] private float _wingFlapYVelocity = 0.25f;
     [SerializeField] private float _wingFlapMaxDuration = 3;
     private float _currentWingFlapTime = 0;
     [SerializeField] private float _delayToWingFlap = 0.6f;
     private Coroutine _currentWingFlapCoroutine = null;
+
+    [Header("Dirt Mechanic")]
+
+    [SerializeField] private bool _isDirty = false;
+    public bool IsDirty { get { return _isDirty; } set { _isDirty = value; } }
 
     [Header("References")]
 
