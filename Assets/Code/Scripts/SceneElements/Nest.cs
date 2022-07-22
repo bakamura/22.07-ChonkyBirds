@@ -41,14 +41,14 @@ public class Nest : MonoBehaviour {
 
     [Header("Stars")]
 
-    private bool[] _stars = new bool[2];
     private Action _mainGoalCheck = null;  // More memory allocation for a small increase in speed
-    private Action _secondGoalCheck = null;
-    private Action _thirdGoalCheck = null;
+    private LevelStar _secondGoalCheck = null;
+    private LevelStar _thirdGoalCheck = null;
 
     [Header("Proxy")]
 
     private Collider _playerCol = null;
+    private PlayerMovement _playerMovementScript = null;
     private PlayerPickUp _playerPickScript = null;
 
     const string Egg = "Egg";
@@ -59,18 +59,20 @@ public class Nest : MonoBehaviour {
         _eggObjs = new Transform[_eggPos.Length];
 
         _mainGoalCheck = GetMainGoalCheck();
-        _secondGoalCheck = GetSecondaryGoalCheck(_secondGoal);
-        _thirdGoalCheck = GetSecondaryGoalCheck(_thirdGoal);
     }
 
     private void Start() {
         _playerCol = GameObject.FindGameObjectWithTag("Player").GetComponent<Collider>();
+        _playerMovementScript = _playerCol.GetComponent<PlayerMovement>();
         _playerPickScript = _playerCol.GetComponent<PlayerPickUp>();
+
+        _secondGoalCheck = GetSecondaryGoalCheck(_secondGoal);
+        _thirdGoalCheck = GetSecondaryGoalCheck(_thirdGoal);
     }
 
     private void Update() {
-        _secondGoalCheck.Invoke();
-        _thirdGoalCheck.Invoke();
+        _secondGoalCheck.Update();
+        _thirdGoalCheck.Update();
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -79,14 +81,15 @@ public class Nest : MonoBehaviour {
 
     private void LevelClear() {
         print("Level Cleared!");
-        // Calc Stars
+        // Calc Stars, show UI
         // Save Progress
         // Level Clear PopUp
     }
 
     private void ReturnNestCheck() {
-        // Check if is clean
-        LevelClear();
+        // Maybe make separate check for dirty
+        if (_playerMovementScript.IsDirty) ; // Show popup that it's dirty?
+        else LevelClear();
     }
 
     private void EggNestCheck() {
@@ -119,35 +122,28 @@ public class Nest : MonoBehaviour {
         }
     }
 
-    private void BringObjectGoal() {
+    private bool DontJumpGoal() {
+        return false;
 
     }
 
-    private void TimeLimitGoal() {
+    private bool DontPickGoal() {
+        return false;
 
     }
 
-    private void PacifistGoal() {
+    private bool DontEatGoal() {
+        return false;
 
     }
 
-    private void DontJumpGoal() {
+    private bool DontRollGoal() {
+        return false;
 
     }
 
-    private void DontPickGoal() {
-
-    }
-
-    private void DontEatGoal() {
-
-    }
-
-    private void DontRollGoal() {
-
-    }
-
-    private void DontHitHardGoal() {
+    private bool DontHitHardGoal() {
+        return false;
 
     }
 
@@ -160,16 +156,16 @@ public class Nest : MonoBehaviour {
         }
     }
 
-    private Action GetSecondaryGoalCheck(SecondaryGoal goal) {
+    private LevelStar GetSecondaryGoalCheck(SecondaryGoal goal) {
         switch (goal) {
-            case SecondaryGoal.BringObject: return BringObjectGoal;
-            case SecondaryGoal.TimeLimit: return TimeLimitGoal;
-            case SecondaryGoal.Pacifist: return PacifistGoal;
-            case SecondaryGoal.DontJump: return DontJumpGoal;
-            case SecondaryGoal.DontPick: return DontPickGoal;
-            case SecondaryGoal.DontEat: return DontEatGoal;
-            case SecondaryGoal.DontRoll: return DontRollGoal;
-            case SecondaryGoal.DontHitHard: return DontHitHardGoal;
+            case SecondaryGoal.BringObject: return new StarCollectObject();
+            case SecondaryGoal.TimeLimit: return new StarTimeLimit();
+            case SecondaryGoal.Pacifist: return new StarPacifist();
+            case SecondaryGoal.DontJump: return new StarDontUseX(StarDontUseX.X.Jump);
+            case SecondaryGoal.DontPick: return new StarDontUseX(StarDontUseX.X.Pick);
+            case SecondaryGoal.DontEat: return new StarDontUseX(StarDontUseX.X.Eat);
+            case SecondaryGoal.DontRoll: return new StarDontUseX(StarDontUseX.X.Roll);
+            case SecondaryGoal.DontHitHard: return new StarDontUseX(StarDontUseX.X.FallHard);
             default: return null;
         }
     }
