@@ -16,7 +16,7 @@ public class Nest : MonoBehaviour {
 
     }
     // Rethink. Could be done using statemachine-like code
-    private enum SecondaryGoal { 
+    private enum SecondaryGoal {
 
         BringObject,
         TimeLimit,
@@ -45,18 +45,19 @@ public class Nest : MonoBehaviour {
     private LevelStar _secondGoalCheck = null;
     private LevelStar _thirdGoalCheck = null;
 
+    [SerializeField] private float _timeLimit = 60f; //
+
     [Header("Proxy")]
 
     private Collider _playerCol = null;
     private PlayerMovement _playerMovementScript = null;
     private PlayerPickUp _playerPickScript = null;
 
-    const string Egg = "Egg";
     const string Food = "Food";
     const string Fed = "Fed";
 
     private void Awake() {
-        _eggObjs = new Transform[_eggPos.Length];
+        if (_mainGoal == NestType.Eggs) _eggObjs = new Transform[_eggPos.Length];
 
         _mainGoalCheck = GetMainGoalCheck();
     }
@@ -71,8 +72,8 @@ public class Nest : MonoBehaviour {
     }
 
     private void Update() {
-        _secondGoalCheck.Update();
-        _thirdGoalCheck.Update();
+        _secondGoalCheck?.Update();
+        _thirdGoalCheck?.Update();
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -80,15 +81,17 @@ public class Nest : MonoBehaviour {
     }
 
     private void LevelClear() {
-        print("Level Cleared!");
         // Calc Stars, show UI
+        Debug.Log("Stars Got: *" + (_secondGoalCheck.star ? " *" : " _") + (_thirdGoalCheck.star ? " *" : " _"));
+        _secondGoalCheck = null; // To prevent .Update being called
+        _thirdGoalCheck = null;
         // Save Progress
         // Level Clear PopUp
     }
 
     private void ReturnNestCheck() {
         // Maybe make separate check for dirty
-        if (_playerMovementScript.IsDirty) ; // Show popup that it's dirty?
+        if (_playerMovementScript.IsDirty) { } // Show popup that it's dirty?
         else LevelClear();
     }
 
@@ -116,7 +119,7 @@ public class Nest : MonoBehaviour {
             _playerPickScript.CurrentObj.transform.SetParent(null);                     // Simply destroy the object?
             for (int i = 0; i < _hatchlings.Length; i++) if (!_hatchlings[i].GetBool(Fed)) {
                     _hatchlings[i].SetBool(Fed, true); // TEST how it functions with animator attached
-                    if(i == _hatchlings.Length - 1) LevelClear();
+                    if (i == _hatchlings.Length - 1) LevelClear();
                     break;
                 }
         }
@@ -159,7 +162,7 @@ public class Nest : MonoBehaviour {
     private LevelStar GetSecondaryGoalCheck(SecondaryGoal goal) {
         switch (goal) {
             case SecondaryGoal.BringObject: return new StarCollectObject();
-            case SecondaryGoal.TimeLimit: return new StarTimeLimit();
+            case SecondaryGoal.TimeLimit: return new StarTimeLimit(_timeLimit);
             case SecondaryGoal.Pacifist: return new StarPacifist();
             case SecondaryGoal.DontJump: return new StarDontUseX(StarDontUseX.X.Jump);
             case SecondaryGoal.DontPick: return new StarDontUseX(StarDontUseX.X.Pick);

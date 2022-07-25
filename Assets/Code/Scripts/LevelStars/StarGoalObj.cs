@@ -11,8 +11,10 @@ public class StarGoalObj : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (other == _playerCol) _starCheckScript.star = true;
-        Destroy(gameObject); // Maybe just set to invisible and disable depending on how level will be reloaded
+        if (other == _playerCol) {
+            _starCheckScript.star = true;
+            Destroy(gameObject); // Maybe just set to invisible and disable depending on how level will be reloaded
+        }
     }
 
 }
