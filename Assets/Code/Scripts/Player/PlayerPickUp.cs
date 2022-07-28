@@ -11,6 +11,13 @@ public class PlayerPickUp : MonoBehaviour {
     [SerializeField] private float _releaseDuration = 0.4f;
     [SerializeField] private Transform _beakPoint = null;
 
+    [Header("Poop")]
+
+    [SerializeField] private GameObject _poopPrefab = null;
+    [SerializeField] private float _delayToPoop = 5f;
+    [SerializeField] private Vector3 _poopOffSet = Vector3.down;
+    // UI indicator clock for poop
+
     [Header("EggSack Info")]
 
     private Transform _eggObj = null;
@@ -19,15 +26,16 @@ public class PlayerPickUp : MonoBehaviour {
 
     [Header("Internal")]
 
-    private Coroutine _currentCoroutine = null;
+    private Coroutine _currentCoroutine = null; // Move elsewhere?
     private Transform _currentObj = null;
     public Transform CurrentObj { get { return _currentObj; } }
 
     const string Object = "Object";
     const string Food = "Food";
     const string Egg = "Egg";
-    private WaitForSeconds _waitPick;
-    private WaitForSeconds _waitRelease;
+    private WaitForSeconds _waitPick = null;
+    private WaitForSeconds _waitRelease = null;
+    private WaitForSeconds _waitPoop = null;
 
     [Header("Proxy")]
 
@@ -40,6 +48,7 @@ public class PlayerPickUp : MonoBehaviour {
 
         _waitPick = new WaitForSeconds(_pickUpDuration);
         _waitRelease = new WaitForSeconds(_releaseDuration);
+        _waitPoop = new WaitForSeconds(_delayToPoop / 5);
     }
 
     private void Update() {
@@ -47,6 +56,7 @@ public class PlayerPickUp : MonoBehaviour {
             if (_currentObj == null) _currentCoroutine = StartCoroutine(PickupObj());
             else _currentCoroutine = StartCoroutine(ReleaseObj());
         }
+        if (PlayerInputs.RollKeyDown > 0 && _currentObj.CompareTag(Food)) StartCoroutine(InstantiatePoop()); // Check Conditions
     }
 
     private IEnumerator PickupObj() {
@@ -114,6 +124,23 @@ public class PlayerPickUp : MonoBehaviour {
         _movementScript.CanMove = true;
 
         _currentCoroutine = null;
+    }
+
+    private IEnumerator InstantiatePoop() {
+        _currentObj = null;
+        //Start timer clock
+        for (int i = 0; i < 5; i++) { // SUBISTITUTE FOR A SMOOTH CLOCK IN UPDATE ?
+            // Fill UI image based on 'i'
+            
+            yield return _waitPoop;
+        }
+        // Set UI image to full (?)
+
+        Instantiate(_poopPrefab, transform.position + _poopOffSet, Quaternion.identity);
+
+        // Delay to erase clock UI
+        
+        // Close clock UI
     }
 
 #if UNITY_EDITOR

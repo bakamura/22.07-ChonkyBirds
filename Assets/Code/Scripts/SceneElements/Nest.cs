@@ -82,11 +82,11 @@ public class Nest : MonoBehaviour {
 
     private void LevelClear() {
         // Calc Stars, show UI
-        Debug.Log("Stars Got: *" + (_secondGoalCheck.star ? " *" : " _") + (_thirdGoalCheck.star ? " *" : " _"));
+        Debug.Log("Stars Got: *" + (_secondGoalCheck.star ? " *" : " _") + (_thirdGoalCheck.star ? " *" : " _")); //
         _secondGoalCheck = null; // To prevent .Update being called
         _thirdGoalCheck = null;
         // Save Progress
-        // Level Clear PopUp
+        // Level Clear PopUp UI
     }
 
     private void ReturnNestCheck() {

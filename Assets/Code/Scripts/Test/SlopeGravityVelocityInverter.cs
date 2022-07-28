@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GravityVelocityInverter : MonoBehaviour {
+public class SlopeGravityVelocityInverter : MonoBehaviour {
 
     private Collider _playerCol = null;
     private Rigidbody _playerRb = null;
