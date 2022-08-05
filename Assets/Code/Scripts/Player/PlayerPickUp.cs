@@ -27,6 +27,7 @@ public class PlayerPickUp : MonoBehaviour {
     [Header("Internal")]
 
     private Coroutine _currentCoroutine = null; // Move elsewhere?
+    public Coroutine CurrentCoroutine { get { return _currentCoroutine; } set { _currentCoroutine = value; } }
     private Transform _currentObj = null;
     public Transform CurrentObj { get { return _currentObj; } }
 
@@ -56,7 +57,7 @@ public class PlayerPickUp : MonoBehaviour {
             if (_currentObj == null) _currentCoroutine = StartCoroutine(PickupObj());
             else _currentCoroutine = StartCoroutine(ReleaseObj());
         }
-        if (PlayerInputs.RollKeyDown > 0 && _currentObj.CompareTag(Food)) StartCoroutine(InstantiatePoop()); // Check Conditions
+        if (PlayerInputs.RollKeyDown > 0 && _currentObj != null && _currentObj.CompareTag(Food)) StartCoroutine(InstantiatePoop()); // Check Conditions
     }
 
     private IEnumerator PickupObj() {

@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class SlopeGravityVelocityInverter : MonoBehaviour {
 
-    private Collider _playerCol = null;
+    private SphereCollider _playerCol = null;
     private Rigidbody _playerRb = null;
 
     private void Awake() {
-        _playerCol = GameObject.FindGameObjectWithTag("Player").GetComponent<Collider>();
+        _playerCol = GameObject.FindGameObjectWithTag("Player").GetComponent<SphereCollider>();
         _playerRb = _playerCol.GetComponent<Rigidbody>();
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (other == _playerCol) _playerRb.velocity = new Vector3(_playerRb.velocity.x, -_playerRb.velocity.y, _playerRb.velocity.z);
+        if (_playerCol == other) { _playerRb.velocity = new Vector3(_playerRb.velocity.x, -_playerRb.velocity.y, _playerRb.velocity.z); print("a"); }
     }
 
 }
