@@ -40,14 +40,15 @@ public class PlayerRoll : MonoBehaviour {
         _rb.velocity = transform.forward * _rollSpeed;
         _rb.angularVelocity = Vector3.forward * _rollSpeed;
 
+        yield return new WaitForSeconds(1.5f); //
         while (_rb.velocity.sqrMagnitude > 2) yield return _sleep;
 
-        //_meshCol.enabled = true;
-        //_sphereCol.enabled = false;
-        //_rb.constraints = RigidbodyConstraints.FreezeRotation;
-        //_rb.velocity = Vector3.zero;
-        //transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
-        //_movementScript.CanMove = true;
+        _meshCol.enabled = true;
+        _sphereCol.enabled = false;
+        _rb.constraints = RigidbodyConstraints.FreezeRotation;
+        _rb.velocity = Vector3.zero;
+        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+        _movementScript.CanMove = true;
     }
 
 }
