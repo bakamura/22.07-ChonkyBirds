@@ -18,7 +18,7 @@ public class InGameUI : MonoBehaviour {
     [SerializeField] private KeyCode _pauseKey = KeyCode.Escape;
 
     private void Update() {
-        if (Input.GetKeyDown(_pauseKey)) { 
+        if (Input.GetKeyDown(_pauseKey)) {
             if (_ui.interactable) {
                 MenuFunctions.FadeCanvasGroup(_ui, 0);
                 MenuFunctions.FadeCanvasGroup(_pauseMenu, 1);
@@ -49,6 +49,11 @@ public class InGameUI : MonoBehaviour {
         MenuFunctions.FadeCanvasGroup(_pauseMenu, 0);
 
         Time.timeScale = 1; //
+    }
+
+    public void OpenSettingsMenu(bool open) {
+        MenuFunctions.FadeCanvasGroup(_settingsMenu, open ? 1 : 0);
+
     }
 
 }
