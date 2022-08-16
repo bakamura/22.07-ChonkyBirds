@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InGameUI : MonoBehaviour {
 
@@ -11,6 +10,7 @@ public class InGameUI : MonoBehaviour {
     [SerializeField] private CanvasGroup _pauseMenu = null;
     [SerializeField] private CanvasGroup _settingsMenu = null;
 
+    private CanvasGroup _currentCanvas = null;
 
 #if UNITY_STANDALONE_WIN
     [Header("Pause")]
@@ -54,6 +54,23 @@ public class InGameUI : MonoBehaviour {
     public void OpenSettingsMenu(bool open) {
         MenuFunctions.FadeCanvasGroup(_settingsMenu, open ? 1 : 0);
 
+    }
+
+    public void SwitchCanvasInstant(CanvasGroup canvasToOpen) {
+        MenuFunctions.FadeCanvasGroup(canvasToOpen, 1);
+        MenuFunctions.FadeCanvasGroup(_currentCanvas, 0);
+        _currentCanvas = canvasToOpen;
+        if (_currentCanvas == _ui) Time.timeScale = 1;
+        else Time.timeScale = 0;
+    }
+
+    public void RestartLevel() {
+        // Set every item in the scene to be reusable
+    }
+
+    public void EnterLevel(int levelToLoad) {
+        SceneManager.LoadScene(levelToLoad); // Set in a way to return to the corresponding world's Menu
+        Time.timeScale = 1; // Prevent weird behaviour time related
     }
 
 }

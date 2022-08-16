@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour {
     [SerializeField] private CanvasGroup _mainMenu = null;
     [SerializeField] private CanvasGroup _creditsMenu = null;
     [SerializeField] private CanvasGroup _settingsMenu = null;
+    [SerializeField] private CanvasGroup _languageSelectorMenu = null;
     [SerializeField] private CanvasGroup _shopMenu = null;
     [SerializeField] private CanvasGroup _worldSelectorMenu = null;
     [SerializeField] private CanvasGroup _levelSelectorMenu = null;
@@ -73,6 +74,10 @@ public class MainMenu : MonoBehaviour {
 
     public void SwitchCanvasInstant(CanvasGroup canvasToOpen) {
         MenuFunctions.FadeCanvasGroup(canvasToOpen, 1);
+        if (canvasToOpen == _languageSelectorMenu) {
+            _currentMenu = _languageSelectorMenu;
+            return;
+        }
         MenuFunctions.FadeCanvasGroup(_currentMenu, 0);
         _currentMenu = canvasToOpen;
     }
