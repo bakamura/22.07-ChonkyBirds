@@ -36,27 +36,27 @@ public class InGameUI : MonoBehaviour {
     }
 #endif
 
-    public void PauseBtn() {
-        MenuFunctions.FadeCanvasGroup(_ui, 0);
-        MenuFunctions.FadeCanvasGroup(_pauseMenu, 1);
-        MenuFunctions.FadeCanvasGroup(_settingsMenu, 0);
+    //public void PauseBtn() {
+    //    MenuFunctions.FadeCanvasGroup(_ui, 0);
+    //    MenuFunctions.FadeCanvasGroup(_pauseMenu, 1);
+    //    MenuFunctions.FadeCanvasGroup(_settingsMenu, 0);
 
-        Time.timeScale = 0; //
-    }
+    //    Time.timeScale = 0; //
+    //}
 
-    public void ResumeBtn() {
-        MenuFunctions.FadeCanvasGroup(_ui, 1);
-        MenuFunctions.FadeCanvasGroup(_pauseMenu, 0);
+    //public void ResumeBtn() {
+    //    MenuFunctions.FadeCanvasGroup(_ui, 1);
+    //    MenuFunctions.FadeCanvasGroup(_pauseMenu, 0);
 
-        Time.timeScale = 1; //
-    }
+    //    Time.timeScale = 1; //
+    //}
 
     public void OpenSettingsMenu(bool open) {
         MenuFunctions.FadeCanvasGroup(_settingsMenu, open ? 1 : 0);
 
     }
 
-    public void SwitchCanvasInstant(CanvasGroup canvasToOpen) {
+    public void SwitchCanvasInstant(CanvasGroup canvasToOpen) { //
         MenuFunctions.FadeCanvasGroup(canvasToOpen, 1);
         MenuFunctions.FadeCanvasGroup(_currentCanvas, 0);
         _currentCanvas = canvasToOpen;
