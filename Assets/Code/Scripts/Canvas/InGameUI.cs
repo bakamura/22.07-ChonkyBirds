@@ -9,6 +9,7 @@ public class InGameUI : MonoBehaviour {
     [SerializeField] private CanvasGroup _ui = null;
     [SerializeField] private CanvasGroup _pauseMenu = null;
     [SerializeField] private CanvasGroup _settingsMenu = null;
+    [SerializeField] private CanvasGroup _levelEndMenu = null;
 
     private CanvasGroup _currentCanvas = null;
 
@@ -18,11 +19,17 @@ public class InGameUI : MonoBehaviour {
     [SerializeField] private KeyCode _pauseKey = KeyCode.Escape;
 
     private void Update() {
-        if (Input.GetKeyDown(_pauseKey)) SwitchCanvasInstant(_pauseMenu);
-        else SwitchCanvasInstant(_ui);
-        
+        if (Input.GetKeyDown(_pauseKey)) {
+            if (_ui.interactable) SwitchCanvasInstant(_pauseMenu);
+            else SwitchCanvasInstant(_ui);
+        }
+
     }
 #endif
+
+    private void Awake() {
+        _currentCanvas = _ui;
+    }
 
     public void SwitchCanvasInstant(CanvasGroup canvasToOpen) {
         // Start Animation for each menu except main?

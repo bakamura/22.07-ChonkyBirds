@@ -81,7 +81,6 @@ GameObject:
   - component: {fileID: 4105814624946257289}
   - component: {fileID: 4105814624946257288}
   - component: {fileID: 4105814624946257291}
-  - component: {fileID: 4105814624946257286}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -113,7 +112,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4105814624946257290}
-  m_Mesh: {fileID: -2208176274438149666, guid: 2af0b71f884ed5c49ba05fe35123d385, type: 3}
+  m_Mesh: {fileID: -5755197145248551033, guid: cd04b6451b79dee4eb74b632f72e2b5b, type: 3}
 --- !u!23 &4105814624946257283
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -134,7 +133,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8398066bb277ba54584f1957d6c34384, type: 2}
+  - {fileID: 2100000, guid: 9f84dc86bee418744897e7e125bce169, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -185,7 +184,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 2534964839176971238, guid: 1b9f79bea00c17346ab2609ac967df3b, type: 3}
+  m_Mesh: {fileID: -2483476334655543404, guid: cd04b6451b79dee4eb74b632f72e2b5b, type: 3}
 --- !u!135 &4105814624946257292
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -294,16 +293,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rollSpeed: 5
---- !u!114 &4105814624946257286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4105814624946257290}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40374b5a374fa514cb60cc23f3944cc8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _multiplier: 1.5
