@@ -30,16 +30,22 @@ public class PlayerInputPC : MonoBehaviour {
     public KeyCode PauseKey { set { _pauseKey = value; } }
 
     private void Update() {
+        UpdateTimers();
+        GetInputs();
+    }
+
+    private void UpdateTimers() {
         PlayerInputs.JumpKey -= Time.deltaTime;
         PlayerInputs.JumpKeyDown -= Time.deltaTime;
         PlayerInputs.PickKeyDown -= Time.deltaTime;
         PlayerInputs.RollKeyDown -= Time.deltaTime;
+    }
 
+    private void GetInputs() {
         PlayerInputs.Movement = new Vector3((Input.GetKey(_leftKey) ? -1 : 0) + (Input.GetKey(_rightKey) ? 1 : 0), 0, (Input.GetKey(_backwardKey) ? -1 : 0) + (Input.GetKey(_forwardKey) ? 1 : 0)).normalized;
         if (Input.GetKey(_jumpKey)) PlayerInputs.JumpKey = _inputRememberDuration;
         if (Input.GetKeyDown(_jumpKey)) PlayerInputs.JumpKeyDown = _inputRememberDuration;
         if (Input.GetKeyDown(_pickKey)) PlayerInputs.PickKeyDown = _inputRememberDuration;
         if (Input.GetKeyDown(_rollKey)) PlayerInputs.RollKeyDown = _inputRememberDuration;
     }
-
 }

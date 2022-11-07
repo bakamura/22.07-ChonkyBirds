@@ -31,10 +31,7 @@ public class PlayerRoll : MonoBehaviour {
     }
 
     private IEnumerator Roll() {
-        _movementScript.CanMove = false;
-        _meshCol.enabled = false;
-        _sphereCol.enabled = true;
-        _rb.constraints = RigidbodyConstraints.None;
+        StartStopRoll(true);
 
         if(PlayerInputs.Movement != Vector3.zero) transform.eulerAngles = new Vector3(0, Mathf.Atan2(PlayerInputs.Movement.x, PlayerInputs.Movement.z) * Mathf.Rad2Deg + _camera.eulerAngles.y, 0);
         _rb.velocity = transform.forward * _rollSpeed;
@@ -43,12 +40,16 @@ public class PlayerRoll : MonoBehaviour {
         yield return new WaitForSeconds(1.5f); //
         while (_rb.velocity.sqrMagnitude > 2) yield return _sleep;
 
-        _meshCol.enabled = true;
-        _sphereCol.enabled = false;
-        _rb.constraints = RigidbodyConstraints.FreezeRotation;
-        _rb.velocity = Vector3.zero;
-        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
-        _movementScript.CanMove = true;
+        StartStopRoll(false);
     }
 
+    private void StartStopRoll(bool isStarting) {
+        _movementScript.CanMove = !isStarting;
+        _meshCol.enabled = !isStarting;
+        _rb.constraints = isStarting ? RigidbodyConstraints.None : RigidbodyConstraints.FreezeRotation;
+        if(!isStarting) {
+            _rb.velocity = Vector3.zero;
+            transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0); // Works improperly when finishes upside down
+        }
+    }
 }
